@@ -1,0 +1,14 @@
+---
+# add users to docker group task
+---
+- name: Ensure group "docker" exists
+  group:
+    name: docker
+    state: present
+
+- name: Add docker users to the docker group.
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users }}"

@@ -1,0 +1,5 @@
+---
+# vars file for docker-role
+distribution_user:
+  ubuntu: ubuntu
+  redhat: ec2-user

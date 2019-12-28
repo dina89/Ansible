@@ -1,0 +1,43 @@
+---
+# tasks ubuntu file for docker-role
+- name: update apt and install missing pkgs to allow apt to use a repo over https
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    pkg:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg-agent
+    - software-properties-common
+
+- name: Add Docker GPG Key
+  apt_key:
+    id: 0EBFCD88
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu "{{ansible_distribution_release}}" stable
+    state: present
+    update_cache: yes
+
+- name: Update apt and install docker-ce
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    state: latest
+    policy_rc_d: 101
+    pkg:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+  register: dockerservice
+
+- name: Restart docker service, only when docker engine package gets updates
+service:
+  name: docker
+  state: restarted
+ when: dockerservice.changed
+  
