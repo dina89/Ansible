@@ -1,14 +1,22 @@
 ---
 # add users to docker group task
----
 - name: Ensure group "docker" exists
   group:
     name: docker
     state: present
 
-- name: Add docker users to the docker group.
+- name: Add docker users to the docker Ubuntu group.
   user:
     name: "{{ item }}"
     groups: docker
     append: true
-  with_items: "{{ docker_users }}"
+  with_items: "{{ docker_ubuntu_users }}"
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Add docker users to the docker RedHat group.
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_redhat_users }}"
+  when: ansible_os_family == 'RedHat'

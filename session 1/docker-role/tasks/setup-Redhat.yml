@@ -28,17 +28,23 @@
     option: enabled
     value: '{{ docker_yum_repo_enable_edge }}'
 
+- name: Install requiered pkgs
+  yum:
+    name:
+      - yum-utils
+      - lvm2
+    state: present
+
+- name: Enable extras RHEL repository
+  package:
+    name: http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-1.el7_6.noarch.rpm
+    state: present
+
 - name: Install containerd separately (CentOS 8).
   package:
     name: https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
     state: present
   when: ansible_distribution_major_version | int == 8
-
-- name: Restart docker service, only when docker engine package gets updates
-  service:
-    name: docker
-    state: restarted
-  when: dockerservice.changed
 
 - name: Install Docker.
   package:

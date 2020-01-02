@@ -1,0 +1,6 @@
+---
+- hosts: nodes
+  become: true
+  remote_user: "{{RedHat_user}}"
+  roles:
+    - docker-role

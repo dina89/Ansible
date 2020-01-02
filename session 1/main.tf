@@ -1,7 +1,5 @@
 provider "aws" {
     region = var.aws_region
-    access_key = var.aws_access_key
-    secret_key = var.aws_secret_key
 }
 
 data "aws_subnet_ids" "subnets" {
@@ -78,12 +76,25 @@ resource "aws_instance" "server" {
   vpc_security_group_ids = [aws_security_group.ansible-sg.id]
   key_name               = aws_key_pair.ansible_key.key_name
 
-    provisioner "remote-exec"{
+
+  connection {
+      type = "ssh"
+      host = self.public_ip
+      user = "ubuntu"
+      private_key = tls_private_key.ansible_key.private_key_pem
+  }
+
+  provisioner "file" {
+    source      = "ansible.pem"
+    destination = "/tmp/ansible.pem"
+  }
+
+  provisioner "remote-exec"{
       inline = [
           "sudo apt update",
-          "sudo apt install software-properties-common",
+          "sudo apt install software-properties-common -y",
           "sudo apt-add-repository --yes --update ppa:ansible/ansible",
-          "sudo apt install ansible"
+          "sudo apt install ansible -y",
       ]
   }
 
@@ -92,7 +103,7 @@ resource "aws_instance" "server" {
   }
 }
 
-resource "aws_instance" "nodes" {
+resource "aws_instance" "nodes-ubuntu" {
   count =2 
 
   ami           = data.aws_ami.ubuntu.id
@@ -104,8 +115,23 @@ resource "aws_instance" "nodes" {
   key_name               = aws_key_pair.ansible_key.key_name
 
   tags = {
-    Name = "Node${count.index}"
+    Name = "NodeUbuntu${count.index}"
   }
 }
 
+resource "aws_instance" "nodes-redhat" {
+  count =1
+
+  ami           = "ami-00068cd7555f543d5"
+  instance_type = "t2.micro"
+
+  associate_public_ip_address = true
+
+  vpc_security_group_ids = [aws_security_group.ansible-sg.id]
+  key_name               = aws_key_pair.ansible_key.key_name
+
+  tags = {
+    Name = "NodeRedHat${count.index}"
+  }
+}
 

@@ -17,6 +17,3 @@ variable "ingress_ports" {
   description = "list of ingress ports"
   default     = [22]
 }
-
-variable "aws_access_key" {}
-variable "aws_secret_key" {}

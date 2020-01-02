@@ -1,0 +1,21 @@
+session 1 ansible
+inventory is actually a list of servers and params for the servers. Like default password
+
+ansible playbook:
+
+name, hosts, vars, 
+pre tasks, tasks, post tasks
+
+
+handlers:
+if certain file was updated you can add notify trigger, 
+hadlers section will wait and see if notify was triggered will run if there was a trigger (orange output)
+notify same name as handlers name 
+
+you can run python etc as part of ansible
+
+you can have more than one play in one playbook
+
+ansible-playbook playbookname.yml -i inventory
+
+ansible var: ansible-distribution-list

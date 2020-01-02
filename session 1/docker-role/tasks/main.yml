@@ -1,9 +1,9 @@
 ---
 # tasks main file for docker-role
-- include_tasks: setup-RedHat.yml
+- include_tasks: setup-Redhat.yml
   when: ansible_os_family == 'RedHat'
 
 - include_tasks: setup-Ubuntu.yml
-  when: ansible_os_family == 'Debian'
+  when: ansible_distribution == 'Ubuntu'
 
-- include_tasks: docker-users.yml
+- include_tasks: docker_users.yml
