@@ -122,7 +122,7 @@ resource "aws_instance" "nodes-ubuntu" {
 resource "aws_instance" "nodes-redhat" {
   count =1
 
-  ami           = "ami-00068cd7555f543d5"
+  ami           = "ami-0c322300a1dd5dc79"
   instance_type = "t2.micro"
 
   associate_public_ip_address = true

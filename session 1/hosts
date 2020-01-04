@@ -1,4 +1,12 @@
-[nodes]
-35.175.144.186
-54.164.32.72
-3.89.215.58
+[ubuntu]
+34.239.119.85
+54.144.73.110
+
+[ubuntu:vars]
+ansible_user="{{Ubuntu_user}}"
+
+[redhat]
+52.90.174.130
+
+[redhat:vars]
+ansible_user="{{RedHat_user}}"
