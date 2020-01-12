@@ -30,4 +30,4 @@ docker_ubuntu_users: ["{{Ubuntu_user}}"]
 docker_redhat_users: ["{{RedHat_user}}"]
 
 #restart docker handler state
-docker_restart_handler_state: true
+docker_restart_handler_state: restarted

@@ -1,12 +1,14 @@
 [ubuntu]
-34.239.119.85
-54.144.73.110
+54.147.33.150
+34.238.80.46
 
 [ubuntu:vars]
 ansible_user="{{Ubuntu_user}}"
+ansible_ssh_common_args="-o StrictHostKeyChecking=no"
 
 [redhat]
-52.90.174.130
+3.82.110.180
 
 [redhat:vars]
 ansible_user="{{RedHat_user}}"
+ansible_ssh_common_args="-o StrictHostKeyChecking=no"

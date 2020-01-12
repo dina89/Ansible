@@ -76,6 +76,9 @@ resource "aws_instance" "server" {
   vpc_security_group_ids = [aws_security_group.ansible-sg.id]
   key_name               = aws_key_pair.ansible_key.key_name
 
+  depends_on = [
+     null_resource.hosts_nodes
+  ]
 
   connection {
       type = "ssh"
@@ -89,12 +92,29 @@ resource "aws_instance" "server" {
     destination = "/tmp/ansible.pem"
   }
 
+  provisioner "file" {
+    source      = "docker_playbook.yml"
+    destination = "docker_playbook.yml"
+  }
+
+  provisioner "file" {
+    source      = "hosts"
+    destination = "hosts"
+  }
+
+  provisioner "file" {
+    source      = "docker-role"
+    destination = "docker-role"
+  }
+
   provisioner "remote-exec"{
       inline = [
           "sudo apt update",
           "sudo apt install software-properties-common -y",
           "sudo apt-add-repository --yes --update ppa:ansible/ansible",
           "sudo apt install ansible -y",
+          "chmod 600 /tmp/ansible.pem",
+          "ansible-playbook -i hosts docker_playbook.yml --private-key=/tmp/ansible.pem"
       ]
   }
 
@@ -135,3 +155,24 @@ resource "aws_instance" "nodes-redhat" {
   }
 }
 
+data "template_file" "hosts_nodes" {
+  template = "${file("${path.module}/docker-role/templates/hosts.cfg")}"
+  depends_on = [
+    aws_instance.nodes-ubuntu,
+    aws_instance.nodes-redhat
+  ]
+  vars = {
+    api_ubuntu = join("\n", aws_instance.nodes-ubuntu.*.public_ip)
+    api_redhat = join("\n", aws_instance.nodes-redhat.*.public_ip)
+  }
+}
+
+resource "null_resource" "hosts_nodes" {
+  triggers = {
+    template_rendered = data.template_file.hosts_nodes.rendered
+  }
+  provisioner "local-exec" {
+    command = "Set-Content -Path 'hosts' -Value '${data.template_file.hosts_nodes.rendered}'"
+    interpreter = ["PowerShell", "-Command"]
+  }
+}
